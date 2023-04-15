@@ -8,7 +8,7 @@
     c = Account number 
 '''
 
-iban = "ES04 2080 1795 2549 9916 ****" # ES0420801795254999165252
+iban = "ES04 2080 1795 2549 99*6 5252" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
@@ -96,7 +96,7 @@ def fill_out_unknown(ibarray, generated_num = None):
 
 print(ibarray, fill_out_unknown(ibarray))
 count_a = 0; count_b = 0; count_both = 0
-for i in range(0000, 9999):
+for i in range(0000, int('9' * unknown_spaces)):
     valid_a = False; valid_b = False
     cur_str = fill_out_unknown(ibarray, i) # ("2080179525499916%04u142804" % i)
     cur     = int(cur_str)
