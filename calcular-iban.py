@@ -8,6 +8,19 @@
     c = Account number 
 '''
 
+iban = "ES04 2080 1795 2549 9916 ****" # ES0420801795254999165252
+ibstrip = iban.replace(" ", "").upper()
+
+es_branch_an_bank_check = ibstrip[12]
+es_account_number_check = ibstrip[13]
+print(f'''
+    {ibstrip[0:4]} {ibstrip[4:8]} {ibstrip[8:12]} {ibstrip[12:16]} {ibstrip[16:20]} {ibstrip[20:]}
+    ESkk bbbb ssss xxcc cccc cccc
+         \___ ___/ {ibstrip[12]}
+                    {ibstrip[13]}\_ ____ ___/
+'''
+)
+
 weights = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
 
 bank_branch_code = "00" + "20801795"
@@ -30,12 +43,8 @@ print(total, 11 - (total % 11))
 
 
 
-iban = "ES04 2080 1795 2549 9916 ****" # ES0420801795254999165252
-ibstrip = iban.replace(" ", "").upper()
+
 ibstrip = ibstrip[4:] + ibstrip[:4]
-
-print(iban, ibstrip)
-
 ibarray = []
 
 for char in ibstrip:
@@ -65,7 +74,7 @@ for i in range(0000, 9999):
     valid_a = False; valid_b = False
     cur = int("2080179525499916%04u142804" % i)
     if cur % 97 == 1:
-        print(f"[i] [{i:04d}] valid: {cur}")
+        #print(f"[i] [{i:04d}] valid: {cur}")
         count_a += 1
         valid_a = True
 
@@ -77,11 +86,13 @@ for i in range(0000, 9999):
     check_num = 11 - (total % 11)
 
     if check_num == 5:
-        print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
+        #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
         count_b += 1
         valid_b = True
 
     if valid_a and valid_b:
+        print(f"[i] [{i:04d}] valid: {cur}")
+        print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
         print(f"[!] both are valid for {cur}")
         count_both += 1
 
