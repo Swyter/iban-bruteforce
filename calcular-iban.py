@@ -11,8 +11,9 @@
 iban = "ES04 2080 1795 2549 9916 ****" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
-es_branch_an_bank_check = ibstrip[12]
-es_account_number_check = ibstrip[13]
+es_bkbrnch_check_num = ibstrip[12]
+es_account_check_num = ibstrip[13]
+
 print(f'''
     {ibstrip[0:4]} {ibstrip[4:8]} {ibstrip[8:12]} {ibstrip[12:16]} {ibstrip[16:20]} {ibstrip[20:]}
     ESkk bbbb ssss xxcc cccc cccc
@@ -40,9 +41,6 @@ for i, elem in enumerate(account_num):
 print(total, 11 - (total % 11))
 
 #exit(0)
-
-
-
 
 ibstrip = ibstrip[4:] + ibstrip[:4]
 ibarray = []
@@ -72,20 +70,21 @@ print(ibarray, ibnum)
 count_a = 0; count_b = 0; count_both = 0
 for i in range(0000, 9999):
     valid_a = False; valid_b = False
-    cur = int("2080179525499916%04u142804" % i)
+    cur_str = ("2080179525499916%04u142804" % i)
+    cur     = int(cur_str)
     if cur % 97 == 1:
         #print(f"[i] [{i:04d}] valid: {cur}")
         count_a += 1
         valid_a = True
 
-    account_num = "499916%04u" % i
+    account_num = cur_str[10:20] # "499916%04u" % i
     total = 0
     for j, elem in enumerate(account_num):
         total += int(elem) * weights[j]
     
     check_num = 11 - (total % 11)
 
-    if check_num == 5:
+    if check_num == int(es_account_check_num):
         #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
         count_b += 1
         valid_b = True
