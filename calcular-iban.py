@@ -16,9 +16,15 @@ for i, elem in enumerate(bank_branch_code):
     print(i, elem)
     total += int(elem) * weights[i]
 
-
 print(total, 11 - (total % 11))
-#account_num = 499916****
+
+account_num = "4999165252"
+total = 0
+for i, elem in enumerate(account_num):
+    print(i, elem)
+    total += int(elem) * weights[i]
+    
+print(total, 11 - (total % 11))
 
 exit(0)
 
