@@ -28,21 +28,29 @@ print(f'''
 
 weights = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
 
-bank_branch_code = "00" + "20801795"
-total = 0
-for i, elem in enumerate(bank_branch_code):
-    print(i, elem)
-    total += int(elem) * weights[i]
+bank_branch_code = "00" + ibstrip[4:12] # "20801795"
+try:
+    int(bank_branch_code)
+    total = 0
+    for i, elem in enumerate(bank_branch_code):
+        print(i, elem)
+        total += int(elem) * weights[i]
 
-print(total, 11 - (total % 11))
+    print(total, 11 - (total % 11))
+except:
+    print("[e] there are missing numbers; can't compute the bank-branch checksum")
 
-account_num = "4999165252"
-total = 0
-for i, elem in enumerate(account_num):
-    print(i, elem)
-    total += int(elem) * weights[i]
-    
-print(total, 11 - (total % 11))
+account_num = ibstrip[14:24] # "4999165252"
+try:
+    int(account_num)
+    total = 0
+    for i, elem in enumerate(account_num):
+        print(i, elem)
+        total += int(elem) * weights[i]
+        
+    print(total, 11 - (total % 11))
+except:
+    print("[e] there are missing numbers; can't compute the account number checksum")
 
 #exit(0)
 
@@ -112,7 +120,7 @@ for i in range(0000, 9999):
     if valid_a and valid_b:
         print(f"[i] [{i:04d}] valid: {cur} % 97 == 1")
         print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
-        print(f"  \ both are valid for [{format_iban(cur)}]")
+        print(f"  \ both are valid for [{format_iban(ibstrip[-4:] + str(cur)[:20])}]")
         count_both += 1
 
 print(f" -- valid for a: {count_a}, valid for b: {count_b}, valid for both: {count_both}")
