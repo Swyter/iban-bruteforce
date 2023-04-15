@@ -8,6 +8,22 @@
     c = Account number 
 '''
 
+weights = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
+
+bank_branch_code = "00" + "20801795"
+total = 0
+for i, elem in enumerate(bank_branch_code):
+    print(i, elem)
+    total += int(elem) * weights[i]
+
+
+print(total, 11 - (total % 11))
+#account_num = 499916****
+
+exit(0)
+
+
+
 iban = "ES04 2080 1795 2549 9916 ****" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 ibstrip = ibstrip[4:] + ibstrip[:4]
@@ -46,3 +62,6 @@ for i in range(0000, 9999):
         count += 1
 
 print(f" -- total: {count}")
+
+
+
