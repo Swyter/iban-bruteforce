@@ -8,7 +8,7 @@
     c = Account number 
 '''
 
-iban = "ES04 *080 17*5 2549 9*16 525*" # ES0420801795254999165252
+iban = "ES04 *080 17*5 254* 9*16 525*" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
@@ -147,9 +147,14 @@ for i in range(0000, 10 ** unknown_spaces):
             valid_b = True
 
     if valid_a and (valid_b or not es_bkbrnch_can_be_checked) and (valid_c or not es_account_can_be_checked):
-        print(f"[i] [{i:04d}] valid: {cur} % 97 == 1")
-        print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
-        print(f"  \ both are valid for the tentative IBAN number [{format_iban(ibstrip[-4:] + str(cur)[:20])}]")
+        print(f"[i] [{i:05d}] valid: {cur} % 97 == 1")
+        print(f"[-] [{i:05d}] valid Spanish check no: {bank_branch_code}")
+        print(f"[-] [{i:05d}] valid Spanish check no: {account_num}")
+
+        reconstructed_iban = ibstrip[-4:] + cur_str[:20]
+        print(
+            f"  \ both are valid for the tentative IBAN number [{format_iban(reconstructed_iban)}]"
+        )
         count_both += 1
 
 print(f" -- valid for a: {count_a}, valid for b: {count_b}, valid for c: {count_c}, valid for both: {count_both}")
