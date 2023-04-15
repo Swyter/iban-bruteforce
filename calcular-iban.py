@@ -60,12 +60,14 @@ for i, elem in enumerate(ibarray):
         ibnum += 'X'
 
 print(ibarray, ibnum)
-count = 0
+count_a = 0; count_b = 0; count_both = 0
 for i in range(0000, 9999):
+    valid_a = False; valid_b = False
     cur = int("2080179525499916%04u142804" % i)
     if cur % 97 == 1:
         print(f"[i] [{i:04d}] valid: {cur}")
-        count += 1
+        count_a += 1
+        valid_a = True
 
     account_num = "499916%04u" % i
     total = 0
@@ -75,10 +77,12 @@ for i in range(0000, 9999):
     check_num = 11 - (total % 11)
 
     if check_num == 5:
-        print(f"[i] [{i:04d}] valid Spanish check no: {account_num}")
-    
+        print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
+        count_b += 1
+        valid_b = True
 
-print(f" -- total: {count}")
+    if valid_a and valid_b:
+        print(f"[!] both are valid for {cur}")
+        count_both += 1
 
-
-
+print(f" -- valid for a: {count_a}, valid for b: {count_b}, valid for both: {count_both}")
