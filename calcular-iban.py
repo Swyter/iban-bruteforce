@@ -26,7 +26,7 @@ for i, elem in enumerate(account_num):
     
 print(total, 11 - (total % 11))
 
-exit(0)
+#exit(0)
 
 
 
@@ -66,6 +66,17 @@ for i in range(0000, 9999):
     if cur % 97 == 1:
         print(f"[i] [{i:04d}] valid: {cur}")
         count += 1
+
+    account_num = "499916%04u" % i
+    total = 0
+    for j, elem in enumerate(account_num):
+        total += int(elem) * weights[j]
+    
+    check_num = 11 - (total % 11)
+
+    if check_num == 5:
+        print(f"[i] [{i:04d}] valid Spanish check no: {account_num}")
+    
 
 print(f" -- total: {count}")
 
