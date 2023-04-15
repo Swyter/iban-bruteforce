@@ -14,8 +14,12 @@ ibstrip = iban.replace(" ", "").upper()
 es_bkbrnch_check_num = ibstrip[12]
 es_account_check_num = ibstrip[13]
 
+def format_iban(num):
+    num_str = str(num)
+    return f"{num_str[0:4]} {num_str[4:8]} {num_str[8:12]} {num_str[12:16]} {num_str[16:20]} {num_str[20:]}"
+
 print(f'''
-    {ibstrip[0:4]} {ibstrip[4:8]} {ibstrip[8:12]} {ibstrip[12:16]} {ibstrip[16:20]} {ibstrip[20:]}
+    {format_iban(ibstrip)}
     ESkk bbbb ssss xxcc cccc cccc
          \___ ___/ {ibstrip[12]}
                     {ibstrip[13]}\_ ____ ___/
@@ -44,7 +48,7 @@ print(total, 11 - (total % 11))
 
 ibstrip = ibstrip[4:] + ibstrip[:4]
 ibarray = []
-
+unknown_spaces = 0
 for char in ibstrip:
     print(char, char > 'A', )
 
@@ -55,29 +59,45 @@ for char in ibstrip:
             num = 10 + (ord(char) - ord('A'))
         else:
             num = None
+            unknown_spaces += 1
 
     ibarray.append(num)
 
-ibnum = ""
-for i, elem in enumerate(ibarray):
-    print (i, elem)
-    if elem != None:
-        ibnum += str(elem)
-    else:
-        ibnum += 'X'
+print(f"[i] {unknown_spaces} unknown spaces")
 
-print(ibarray, ibnum)
+def fill_out_unknown(ibarray, generated_num = None):
+
+    if generated_num != None:
+        generated_num = ("0" * unknown_spaces) + str(generated_num)
+        generated_num = generated_num[-unknown_spaces:]
+        next_generated = 0
+    else:
+        next_generated = 99999
+    ibnum = ""
+    for i, elem in enumerate(ibarray):
+        #print (i, elem)
+        if elem != None:
+            ibnum += str(elem)
+        else:
+            if next_generated > unknown_spaces:
+                ibnum += 'X'
+            else:
+                ibnum += generated_num[next_generated]
+                next_generated += 1
+    return ibnum
+
+print(ibarray, fill_out_unknown(ibarray))
 count_a = 0; count_b = 0; count_both = 0
 for i in range(0000, 9999):
     valid_a = False; valid_b = False
-    cur_str = ("2080179525499916%04u142804" % i)
+    cur_str = fill_out_unknown(ibarray, i) # ("2080179525499916%04u142804" % i)
     cur     = int(cur_str)
     if cur % 97 == 1:
         #print(f"[i] [{i:04d}] valid: {cur}")
         count_a += 1
         valid_a = True
 
-    account_num = cur_str[10:20] # "499916%04u" % i
+    account_num = cur_str[10:20]
     total = 0
     for j, elem in enumerate(account_num):
         total += int(elem) * weights[j]
@@ -90,9 +110,9 @@ for i in range(0000, 9999):
         valid_b = True
 
     if valid_a and valid_b:
-        print(f"[i] [{i:04d}] valid: {cur}")
+        print(f"[i] [{i:04d}] valid: {cur} % 97 == 1")
         print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
-        print(f"[!] both are valid for {cur}")
+        print(f"  \ both are valid for [{format_iban(cur)}]")
         count_both += 1
 
 print(f" -- valid for a: {count_a}, valid for b: {count_b}, valid for both: {count_both}")
