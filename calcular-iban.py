@@ -38,8 +38,11 @@ for i, elem in enumerate(ibarray):
         ibnum += 'X'
 
 print(ibarray, ibnum)
-
+count = 0
 for i in range(0000, 9999):
     cur = int("2080179525499916%04u142804" % i)
     if cur % 97 == 1:
-        print(f"[i] valid: {cur}")
+        print(f"[i] [{i:04d}] valid: {cur}")
+        count += 1
+
+print(f" -- total: {count}")
