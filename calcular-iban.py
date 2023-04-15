@@ -8,7 +8,7 @@
     c = Account number 
 '''
 
-iban = "ES04 2080 1795 2549 9*** 52*2" # ES0420801795254999165252
+iban = "ES04 2080 1795 25** 9916 5252" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
