@@ -8,11 +8,15 @@
     c = Account number 
 '''
 
-iban = "ES04 2080 1795 25** 9916 5252" # ES0420801795254999165252
+iban = "ES04 2080 *7** 2549 9916 5252" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
 es_account_check_num = ibstrip[13]
+
+es_bkbrnch_can_be_checked = True
+es_account_can_be_checked = True
+
 
 def format_iban(num):
     num_str = str(num)
@@ -28,37 +32,45 @@ print(f'''
 
 weights = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
 
-bank_branch_code = "00" + ibstrip[4:12] # "20801795"
-try:
-    int(bank_branch_code)
-    total = 0
-    for i, elem in enumerate(bank_branch_code):
-        print(i, elem)
-        total += int(elem) * weights[i]
+if es_bkbrnch_check_num != '*':
+    bank_branch_code = "00" + ibstrip[4:12] # "20801795"
+    try:
+        int(bank_branch_code)
+        total = 0
+        for i, elem in enumerate(bank_branch_code):
+            #print(i, elem)
+            total += int(elem) * weights[i]
 
-    print(total, 11 - (total % 11))
-except:
-    print("[e] there are missing numbers; can't compute the bank-branch checksum")
+        print("[>]", total, 11 - (total % 11))
+    except:
+        print("[e] there are missing numbers; can't compute the bank-branch checksum")
+else:
+    print("[e] the bank-branch check digit is missing")
+    es_bkbrnch_can_be_checked = False
 
 account_num = ibstrip[14:24] # "4999165252"
-try:
-    int(account_num)
-    total = 0
-    for i, elem in enumerate(account_num):
-        print(i, elem)
-        total += int(elem) * weights[i]
-        
-    print(total, 11 - (total % 11))
-except:
-    print("[e] there are missing numbers; can't compute the account number checksum")
 
+if es_account_check_num != '*':
+    try:
+        int(account_num)
+        total = 0
+        for i, elem in enumerate(account_num):
+            #print(i, elem)
+            total += int(elem) * weights[i]
+            
+        print("[>]", total, 11 - (total % 11))
+    except:
+        print("[e] there are missing numbers; can't compute the account number checksum")
+else:
+    print("[e] the account number check digit is missing")
+    es_account_can_be_checked = False
 #exit(0)
 
 ibstrip = ibstrip[4:] + ibstrip[:4]
 ibarray = []
 unknown_spaces = 0
 for char in ibstrip:
-    print(char, char > 'A', )
+    #print(char, char > 'A', )
 
     try:
         num = int(char)
@@ -74,7 +86,6 @@ for char in ibstrip:
 print(f"[i] {unknown_spaces} unknown spaces")
 
 def fill_out_unknown(ibarray, generated_num = None):
-
     if generated_num != None:
         generated_num = ("0" * unknown_spaces) + str(generated_num)
         generated_num = generated_num[-unknown_spaces:]
@@ -83,7 +94,6 @@ def fill_out_unknown(ibarray, generated_num = None):
         next_generated = 99999
     ibnum = ""
     for i, elem in enumerate(ibarray):
-        #print (i, elem)
         if elem != None:
             ibnum += str(elem)
         else:
@@ -100,7 +110,7 @@ for i in range(0000, 10 ** unknown_spaces):
     valid_a = False; valid_b = False
     cur_str = fill_out_unknown(ibarray, i) # ("2080179525499916%04u142804" % i)
     cur     = int(cur_str)
-    #print(f"[i] [{i:04d}] ")
+
     if cur % 97 == 1:
         #print(f"[i] [{i:04d}] valid: {cur}")
         count_a += 1
@@ -113,12 +123,12 @@ for i in range(0000, 10 ** unknown_spaces):
     
     check_num = 11 - (total % 11)
 
-    if check_num == int(es_account_check_num):
+    if es_account_can_be_checked and check_num == int(es_account_check_num):
         #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
         count_b += 1
         valid_b = True
 
-    if valid_a and valid_b:
+    if valid_a and (valid_b or not es_bkbrnch_can_be_checked):
         print(f"[i] [{i:04d}] valid: {cur} % 97 == 1")
         print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
         print(f"  \ both are valid for [{format_iban(ibstrip[-4:] + str(cur)[:20])}]")
