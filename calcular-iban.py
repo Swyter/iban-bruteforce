@@ -8,7 +8,7 @@
     c = Account number 
 '''
 
-iban = "ES04 *080 17*5 254* 9*16 525*" # ES0420801795254999165252
+iban = "ES0* 2080 1795 2549 9916 ****" # ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
@@ -151,7 +151,7 @@ for i in range(0000, 10 ** unknown_spaces):
         print(f"[-] [{i:05d}] valid Spanish check no: {bank_branch_code}")
         print(f"[-] [{i:05d}] valid Spanish check no: {account_num}")
 
-        reconstructed_iban = ibstrip[-4:] + cur_str[:20]
+        reconstructed_iban = ibstrip[-4:-2] + cur_str[-2:] + cur_str[:20]
         print(
             f"  \ both are valid for the tentative IBAN number [{format_iban(reconstructed_iban)}]"
         )
