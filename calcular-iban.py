@@ -7,8 +7,9 @@
     x = Check digits
     c = Account number 
 '''
-
-iban = "ES0* 2080 1795 2549 9916 ****" # ES0420801795254999165252
+# swy: put your Spanish IBAN here, use asterisks for the unknown spots
+#      the more missing numbers, the more valid numbers will show up.
+iban = "ES04 2080 1795 2549 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]
@@ -41,7 +42,6 @@ if es_bkbrnch_check_num != '*':
         int(bank_branch_code)
         total = 0
         for i, elem in enumerate(bank_branch_code):
-            #print(i, elem)
             total += int(elem) * weights[i]
 
         print("[>]", total, 11 - (total % 11))
@@ -58,7 +58,6 @@ if es_account_check_num != '*':
         int(account_num)
         total = 0
         for i, elem in enumerate(account_num):
-            #print(i, elem)
             total += int(elem) * weights[i]
             
         print("[>]", total, 11 - (total % 11))
@@ -73,8 +72,6 @@ ibstrip = ibstrip[4:] + ibstrip[:4]
 ibarray = []
 unknown_spaces = 0
 for char in ibstrip:
-    #print(char, char > 'A', )
-
     try:
         num = int(char)
     except:
