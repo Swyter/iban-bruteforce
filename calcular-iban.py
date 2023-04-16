@@ -49,7 +49,7 @@ if es_bkbrnch_check_num != '*':
         for i, elem in enumerate(bank_branch_code):
             total += int(elem) * weights[i]
 
-        print("[>]", total, 11 - (total % 11))
+        print(f"[>] bank-branch checksum: 11 - ({total} % 11) = {11 - (total % 11)}")
     except:
         print("[e] there are missing numbers; can't compute the bank-branch checksum")
 else:
