@@ -26,10 +26,15 @@ def format_iban(num):
 print(f'''
     {format_iban(ibstrip)}
     ESkk bbbb ssss xxcc cccc cccc
-         \___ ___/ {ibstrip[12]}
-                    {ibstrip[13]}\_ ____ ___/
+         \___ ___/ {ibstrip[12]}               <- spanish branch/bank check digit
+                    {ibstrip[13]}\_ ____ ___/  <- spanish bank account check digit
 
-    \_{ibstrip[2:4]}________________________/
+    \_{ibstrip[2:4]}________________________/  <- iban global check digits
+
+    {ibstrip[:2]}                             <- country code
+         {ibstrip[4:8]}                      <- bank number/id
+              {ibstrip[8:12]}                 <- the branch number for that bank
+                     {ibstrip[14:16]} {ibstrip[16:20]} {ibstrip[20:]}  <- the account number in that branch
 '''
 )
 
