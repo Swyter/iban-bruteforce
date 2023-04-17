@@ -9,7 +9,7 @@
 '''
 # swy: put your Spanish IBAN here, use asterisks for the unknown spots
 #      the more missing numbers, the more valid numbers will show up.
-iban = "ES04 2080 1795 ñ?49 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
+iban = "ES04 2080 1795 2?49 9916 52**" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]; es_bkbrnch_check_num_gen = None
@@ -67,19 +67,28 @@ else:
 
 account_num = ibstrip[14:24] # "4999165252"
 
+try:
+    int(account_num)
+    total = 0
+    for i, elem in enumerate(account_num):
+        total += int(elem) * weights[i]
+
+    es_account_check_num_gen = 11 - (total % 11)
+
+    print(f"[>] account number checksum: 11 - ({total} % 11) = {es_account_check_num_gen}")
+except:
+    print("[e] there are missing numbers; can't compute the account number checksum")
+
 if es_account_check_num in range(0, 9):
-    try:
-        int(account_num)
-        total = 0
-        for i, elem in enumerate(account_num):
-            total += int(elem) * weights[i]
-            
-        print("[>]", total, 11 - (total % 11))
-    except:
-        print("[e] there are missing numbers; can't compute the account number checksum")
+    print(f"[i] the account number check digit seems to match our own: {es_account_check_num}/{es_account_check_num_gen}")
+elif es_account_check_num_gen:
+    print(f"[-] the account number check digit is missing but we can reconstruct it; substituting it with the regenerated one ({es_account_check_num_gen})")
+    es_account_check_num = str(es_account_check_num_gen)
+    ibstrip = list(ibstrip); ibstrip[13] = es_account_check_num; ibstrip = "".join(ibstrip) # swy: absolutely stupid: https://stackoverflow.com/a/68840528/674685
 else:
     print("[e] the account number check digit is missing and can't be recalculated because there are missing digits")
     es_account_can_be_checked = False
+
 #exit(0)
 
 # swy: split each digit into an array, find wildcard characters, and turn alphanumeric characters into numbers
