@@ -9,11 +9,16 @@
 '''
 # swy: put your Spanish IBAN here, use asterisks for the unknown spots
 #      the more missing numbers, the more valid numbers will show up.
-iban = "ES04 2080 1795 2?49 9916 52**" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
+iban = "ES04 2080 1795 2549 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]; es_bkbrnch_check_num_gen = None
 es_account_check_num = ibstrip[13]; es_account_check_num_gen = None
+
+try: es_bkbrnch_check_num = int(es_bkbrnch_check_num);
+except: pass
+try: es_account_check_num = int(es_account_check_num);
+except: pass
 
 es_bkbrnch_can_be_checked = True
 es_account_can_be_checked = True
@@ -51,11 +56,12 @@ try:
     es_bkbrnch_check_num_gen = 11 - (total % 11)
 
     print(f"[>] bank/branch checksum: 11 - ({total} % 11) = {es_bkbrnch_check_num_gen}")
+    bank_branch_code = int(bank_branch_code)
 except:
     print("[e] there are missing numbers; can't compute the bank-branch checksum")
 
-if es_bkbrnch_check_num in range(0, 9):
-    print(f"[i] the bank/branch check digit seems to match our own: {es_account_check_num}/{es_bkbrnch_check_num_gen}")
+if es_bkbrnch_check_num in range(0, 9) and es_bkbrnch_check_num == es_bkbrnch_check_num_gen:
+    print(f"[i] the bank/branch check digit seems to match our own: {es_bkbrnch_check_num}/{es_bkbrnch_check_num_gen}")
 elif es_bkbrnch_check_num_gen:
     print(f"[-] the bank/branch check digit is missing but we can reconstruct it; substituting it with the regenerated one ({es_bkbrnch_check_num_gen})")
     es_bkbrnch_check_num = str(es_bkbrnch_check_num_gen)
@@ -79,7 +85,7 @@ try:
 except:
     print("[e] there are missing numbers; can't compute the account number checksum")
 
-if es_account_check_num in range(0, 9):
+if es_account_check_num in range(0, 9) and es_account_check_num == es_account_check_num_gen:
     print(f"[i] the account number check digit seems to match our own: {es_account_check_num}/{es_account_check_num_gen}")
 elif es_account_check_num_gen:
     print(f"[-] the account number check digit is missing but we can reconstruct it; substituting it with the regenerated one ({es_account_check_num_gen})")
@@ -151,7 +157,7 @@ for i in range(0000, 10 ** unknown_spaces):
         
         check_num = 11 - (total % 11)
 
-        if check_num == int(es_bkbrnch_check_num):
+        if check_num == es_bkbrnch_check_num:
             #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
             count_c += 1
             valid_c = True
@@ -163,7 +169,7 @@ for i in range(0000, 10 ** unknown_spaces):
         
         check_num = 11 - (total % 11)
 
-        if check_num == int(es_account_check_num):
+        if check_num == es_account_check_num:
             #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
             count_b += 1
             valid_b = True
