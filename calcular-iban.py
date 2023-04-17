@@ -15,13 +15,10 @@ ibstrip = iban.replace(" ", "").upper()
 es_bkbrnch_check_num = ibstrip[12]; es_bkbrnch_check_num_gen = None
 es_account_check_num = ibstrip[13]; es_account_check_num_gen = None
 
-es_bkbrnch_can_be_checked = True
-es_account_can_be_checked = True
-
 try: es_bkbrnch_check_num = int(es_bkbrnch_check_num);
-except: es_bkbrnch_can_be_checked = False
+except: pass
 try: es_account_check_num = int(es_account_check_num);
-except: es_account_can_be_checked = False
+except: pass
 
 
 def format_iban(num):
