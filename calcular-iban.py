@@ -147,32 +147,34 @@ for i in range(0000, 10 ** unknown_spaces):
 
     bank_branch_code = "00" + cur_str[0:8]
     account_num = cur_str[10:20]
+    es_bkbrnch_check_num = cur_str[8]
+    es_account_check_num = cur_str[9]
 
-    if es_bkbrnch_can_be_checked:
+    if True: #es_bkbrnch_can_be_checked:
         total = 0
         for j, elem in enumerate(bank_branch_code):
             total += int(elem) * weights[j]
         
         check_num = 11 - (total % 11)
 
-        if check_num == es_bkbrnch_check_num:
+        if check_num == int(es_bkbrnch_check_num):
             #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
-            count_c += 1
-            valid_c = True
+            count_b += 1
+            valid_b = True
 
-    if es_account_can_be_checked:
+    if True: #es_account_can_be_checked:
         total = 0
         for j, elem in enumerate(account_num):
             total += int(elem) * weights[j]
         
         check_num = 11 - (total % 11)
 
-        if check_num == es_account_check_num:
+        if check_num == int(es_account_check_num):
             #print(f"[-] [{i:04d}] valid Spanish check no: {account_num}")
-            count_b += 1
-            valid_b = True
+            count_c += 1
+            valid_c = True
 
-    if valid_a and (valid_c or not es_bkbrnch_can_be_checked) and (valid_b or not es_account_can_be_checked):
+    if valid_a and valid_b and valid_c:
         print(f"[i] [{i:05d}] valid: {cur} % 97 == 1")
         print(f"[-] [{i:05d}] valid Spanish check no: {bank_branch_code}")
         print(f"[-] [{i:05d}] valid Spanish check no: {account_num}")
