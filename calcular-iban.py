@@ -148,7 +148,7 @@ for i in range(0000, 10 ** unknown_spaces):
             count_b += 1
             valid_b = True
 
-    if valid_a and (valid_b or not es_bkbrnch_can_be_checked) and (valid_c or not es_account_can_be_checked):
+    if valid_a and (valid_c or not es_bkbrnch_can_be_checked) and (valid_b or not es_account_can_be_checked):
         print(f"[i] [{i:05d}] valid: {cur} % 97 == 1")
         print(f"[-] [{i:05d}] valid Spanish check no: {bank_branch_code}")
         print(f"[-] [{i:05d}] valid Spanish check no: {account_num}")
