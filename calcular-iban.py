@@ -9,7 +9,7 @@
 '''
 # swy: put your Spanish IBAN here, use asterisks for the unknown spots
 #      the more missing numbers, the more valid numbers will show up.
-iban = "ES04 2080 1795 *549 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
+iban = "ES04 **** 1795 2549 9916 5***" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
 es_bkbrnch_check_num = ibstrip[12]; es_bkbrnch_check_num_gen = None
@@ -20,6 +20,25 @@ except: pass
 try: es_account_check_num = int(es_account_check_num);
 except: pass
 
+import requests
+import csv, io
+
+# swy: download the official list of valid banks and their IDs/codes
+req = requests.get('https://www.bde.es/webbde/es/estadis/ifm/if_es.csv')
+banks = {}
+if req.status_code == 200 and req.reason == 'OK':
+    data = req.content.decode(req.apparent_encoding)
+    data_out = [] # swy: the end of each line comes padded out with spaces, for some bizarre reason
+    for line in data.splitlines():
+        data_out.append(line.strip())
+    data = "\n".join(data_out)
+
+    table = csv.DictReader(io.StringIO(data), skipinitialspace=True)
+    for row in table:
+        try:
+            banks[int(row['CÓDIGO DE SUPERVISOR'])] = row['NOMBRE']
+        except: # swy: there are some codes that start with other alpha-numeric country codes; skip those
+            pass
 
 def format_iban(num):
     num_str = str(num)
@@ -135,7 +154,12 @@ count_a = 0; count_b = 0; count_c = 0; count_both = 0
 for i in range(0000, 10 ** unknown_spaces):
     valid_a = False; valid_b = False; valid_c = False
     cur_str = fill_out_unknown(ibarray, i) # ("2080179525499916%04u142804" % i)
-    cur     = int(cur_str)
+
+    # swy: skip large swathes of our numeric search space by skipping banks that don't seem to exist
+    if banks and int(cur_str[:4]) not in banks:
+        continue
+
+    cur = int(cur_str)
 
     if cur % 97 == 1:
         #print(f"[i] [{i:04d}] valid: {cur}")
@@ -177,8 +201,14 @@ for i in range(0000, 10 ** unknown_spaces):
         print(f"[-] [{i:05d}] valid Spanish check no: {account_num}")
 
         reconstructed_iban = ibstrip[-4:-2] + cur_str[-2:] + cur_str[:20]
+        reconstructed_bank = int(reconstructed_iban[4:8])
+        if banks:
+            bank = reconstructed_bank in banks and banks[reconstructed_bank] or "<bank ID does not seem to exist>"
+        else:
+            bank = ""
+
         print(
-            f"  \ both are valid for the tentative IBAN number [{format_iban(reconstructed_iban)}]"
+            f"  \ both are valid for the tentative IBAN number [{format_iban(reconstructed_iban)}] - {bank}"
         )
         count_both += 1
 
