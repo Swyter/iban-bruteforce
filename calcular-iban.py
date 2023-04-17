@@ -44,6 +44,12 @@ def format_iban(num):
     num_str = str(num)
     return f"{num_str[0:4]} {num_str[4:8]} {num_str[8:12]} {num_str[12:16]} {num_str[16:20]} {num_str[20:]}"
 
+try:
+    bank = banks[int(ibstrip[4:8])]
+except:
+    bank = "<???>"
+    pass
+
 print(f'''
     {format_iban(ibstrip)}
     ESkk bbbb ssss xxcc cccc cccc
@@ -52,10 +58,10 @@ print(f'''
 
     \_{ibstrip[2:4]}________________________/  <- iban global check digits
 
-    {ibstrip[:2]}                             <- country code
-         {ibstrip[4:8]}                      <- bank number/id
-              {ibstrip[8:12]}                 <- the branch number for that bank
-                     {ibstrip[14:16]} {ibstrip[16:20]} {ibstrip[20:]}  <- the account number in that branch
+    {ibstrip[:2]}                             <- country code: {ibstrip[:2]} - Spain
+         {ibstrip[4:8]}                      <- bank number/id: {ibstrip[4:8]} - {bank}
+              {ibstrip[8:12]}                 <- the branch number for that bank: {ibstrip[8:12]}
+                     {ibstrip[14:16]} {ibstrip[16:20]} {ibstrip[20:]}  <- the account number in that branch: {ibstrip[14:]}
 '''
 )
 
