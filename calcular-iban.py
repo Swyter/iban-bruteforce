@@ -9,11 +9,11 @@
 '''
 # swy: put your Spanish IBAN here, use asterisks for the unknown spots
 #      the more missing numbers, the more valid numbers will show up.
-iban = "ES04 2080 1795 2549 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
+iban = "ES04 2080 1795 ñ?49 9916 ****" # e.g. dummy auto-generated one, for testing: ES0420801795254999165252
 ibstrip = iban.replace(" ", "").upper()
 
-es_bkbrnch_check_num = ibstrip[12]
-es_account_check_num = ibstrip[13]
+es_bkbrnch_check_num = ibstrip[12]; es_bkbrnch_check_num_gen = None
+es_account_check_num = ibstrip[13]; es_account_check_num_gen = None
 
 es_bkbrnch_can_be_checked = True
 es_account_can_be_checked = True
@@ -42,23 +42,32 @@ weights = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6]
 
 bank_branch_code = "00" + ibstrip[4:12] # "20801795"
 
-if es_bkbrnch_check_num != '*':
-    try:
-        int(bank_branch_code)
-        total = 0
-        for i, elem in enumerate(bank_branch_code):
-            total += int(elem) * weights[i]
+try:
+    int(bank_branch_code)
+    total = 0
+    for i, elem in enumerate(bank_branch_code):
+        total += int(elem) * weights[i]
 
-        print(f"[>] bank-branch checksum: 11 - ({total} % 11) = {11 - (total % 11)}")
-    except:
-        print("[e] there are missing numbers; can't compute the bank-branch checksum")
+    es_bkbrnch_check_num_gen = 11 - (total % 11)
+
+    print(f"[>] bank/branch checksum: 11 - ({total} % 11) = {es_bkbrnch_check_num_gen}")
+except:
+    print("[e] there are missing numbers; can't compute the bank-branch checksum")
+
+if es_bkbrnch_check_num in range(0, 9):
+    print(f"[i] the bank/branch check digit seems to match our own: {es_account_check_num}/{es_bkbrnch_check_num_gen}")
+elif es_bkbrnch_check_num_gen:
+    print(f"[-] the bank/branch check digit is missing but we can reconstruct it; substituting it with the regenerated one ({es_bkbrnch_check_num_gen})")
+    es_bkbrnch_check_num = str(es_bkbrnch_check_num_gen)
+    ibstrip = list(ibstrip); ibstrip[12] = es_bkbrnch_check_num; ibstrip = "".join(ibstrip) # swy: absolutely stupid: https://stackoverflow.com/a/68840528/674685
 else:
-    print("[e] the bank-branch check digit is missing")
+    print("[e] the bank/branch check digit is missing and can't be recalculated because there are missing digits")
     es_bkbrnch_can_be_checked = False
+
 
 account_num = ibstrip[14:24] # "4999165252"
 
-if es_account_check_num != '*':
+if es_account_check_num in range(0, 9):
     try:
         int(account_num)
         total = 0
@@ -69,10 +78,11 @@ if es_account_check_num != '*':
     except:
         print("[e] there are missing numbers; can't compute the account number checksum")
 else:
-    print("[e] the account number check digit is missing")
+    print("[e] the account number check digit is missing and can't be recalculated because there are missing digits")
     es_account_can_be_checked = False
 #exit(0)
 
+# swy: split each digit into an array, find wildcard characters, and turn alphanumeric characters into numbers
 ibstrip = ibstrip[4:] + ibstrip[:4]
 ibarray = []
 unknown_spaces = 0
@@ -90,6 +100,7 @@ for char in ibstrip:
 
 print(f"[i] {unknown_spaces} unknown spaces")
 
+# swy: this function fills out the empty digits with the generated ones, putting them in the right spots
 def fill_out_unknown(ibarray, generated_num = None):
     if generated_num != None:
         generated_num = ("0" * unknown_spaces) + str(generated_num)
